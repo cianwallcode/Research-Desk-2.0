@@ -30,7 +30,7 @@
         nav { 
             background: #111; 
             height: 60px; 
-            display: none; 
+            display: none; /* Initially Hidden */
             justify-content: space-between; 
             align-items: center; 
             padding: 0 30px; 
@@ -49,9 +49,9 @@
         .nav-tab:hover { color: var(--accent); }
         .active-tab { color: white !important; border-bottom: 3px solid var(--accent) !important; background: rgba(230,126,34,0.05); }
 
-        /* SHARED LAYOUT: LEFT SIDEBAR + MAIN CONTENT */
+        /* SHARED LAYOUT */
         .app-container {
-            display: flex;
+            display: none; /* Initially Hidden */
             height: calc(100vh - 60px);
             width: 100%;
         }
@@ -79,24 +79,24 @@
         /* PAGE SYSTEM */
         .page { display: none; width: 100%; height: 100%; }
         
+        /* LANDING PAGE - Absolute Overlay */
         #page-landing {
-            display: flex !important;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100vh;
-            z-index: 3000;
+            top: 0; left: 0; 
+            width: 100%; height: 100vh;
+            z-index: 9999; /* Highest priority */
             background: var(--blueprint);
             background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 30px 30px;
+            display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
         }
 
-        /* MAP ELEMENTS */
         #map { width: 100%; height: calc(100% - 100px); background: var(--map-light); }
         
-        /* INPUTS */
-        label { font-size: 10px; font-weight: bold; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; }
+        label { font-size: 10px; font-weight: bold; color: #888; text-transform: uppercase; margin-bottom: 5px; display: block; }
         input, select {
             background: #111; border: 1px solid #444; color: white;
             padding: 10px; border-radius: 4px; font-size: 12px; width: 100%; box-sizing: border-box;
@@ -109,11 +109,9 @@
             box-shadow: 4px 4px 0px rgba(0,0,0,0.2);
         }
 
-        /* KEY COMPONENT */
         .legend-item { display: flex; align-items: center; gap: 10px; font-size: 11px; color: #ccc; margin-top: 8px; }
         .dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid white; }
 
-        /* ANALYSIS PAPER */
         .paper {
             background: white; color: #333; max-width: 800px;
             margin: 40px auto; min-height: 100vh; padding: 60px;
@@ -123,18 +121,6 @@
     </style>
 </head>
 <body>
-
-<nav id="main-nav">
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <span style="font-weight: 900; letter-spacing: 2px;">RESEARCH<span style="color:var(--accent)">DESK</span></span>
-        <div class="nav-btns">
-            <button id="btn-map" class="nav-tab" onclick="showPage('map')">SPATIAL MAP</button>
-            <button id="btn-dossier" class="nav-tab" onclick="showPage('dossier')">PRECEDENT DATABASE</button>
-            <button id="btn-analysis" class="nav-tab" onclick="showPage('analysis')">SITE ANALYSIS</button>
-        </div>
-    </div>
-    <div style="font-size: 10px; color: #666; font-family: monospace;">SYS_VER_2.1 // PERSISTENT_UI</div>
-</nav>
 
 <div id="page-landing">
     <div style="max-width: 800px; padding: 60px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); backdrop-filter: blur(15px); color: white;">
@@ -151,55 +137,47 @@
     </div>
 </div>
 
-<div id="app-wrapper" class="app-container" style="display:none;">
+<nav id="main-nav">
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <span style="font-weight: 900; letter-spacing: 2px; color:white;">RESEARCH<span style="color:var(--accent)">DESK</span></span>
+        <div class="nav-btns">
+            <button id="btn-map" class="nav-tab" onclick="showPage('map')">SPATIAL MAP</button>
+            <button id="btn-dossier" class="nav-tab" onclick="showPage('dossier')">PRECEDENT DATABASE</button>
+            <button id="btn-analysis" class="nav-tab" onclick="showPage('analysis')">SITE ANALYSIS</button>
+        </div>
+    </div>
+</nav>
+
+<div id="app-wrapper" class="app-container">
     
     <aside class="sidebar">
         <div id="sidebar-map" class="sidebar-content">
             <h3 style="font-size: 11px; color: var(--accent); letter-spacing: 2px; margin-bottom: 20px;">MAP CONTROLS</h3>
-            
-            <section style="margin-bottom: 30px;">
-                <label>Active Dataset</label>
-                <select onchange="switchMapLayer(this.value)">
-                    <option value="churches">Ecclesiastical Structures</option>
-                    <option value="museums">Museum Collections</option>
-                </select>
-            </section>
-
-            <section>
+            <label>Active Dataset</label>
+            <select><option>Ecclesiastical Structures</option><option>Museum Collections</option></select>
+            <section style="margin-top:20px;">
                 <label>Typology Key</label>
                 <div class="legend-item"><div class="dot" style="background:#e67e22;"></div> Approved Precedent</div>
                 <div class="legend-item"><div class="dot" style="background:#3498db;"></div> Religious Site</div>
-                <div class="legend-item"><div class="dot" style="background:#95a5a6;"></div> Unverified/Pending</div>
             </section>
         </div>
 
         <div id="sidebar-dossier" class="sidebar-content" style="display:none;">
             <h3 style="font-size: 11px; color: var(--accent); letter-spacing: 2px;">DATABASE FILTERS</h3>
-            <section style="margin-top:20px;">
-                <label>Materiality</label>
-                <select id="material-filter"><option>All Materials</option><option>Concrete</option><option>Stone</option></select>
-            </section>
-            <section style="margin-top:20px;">
-                <label>Relational Tools</label>
-                <button onclick="alert('Graph View Active')" style="width:100%; border:1px solid #444; background:#111; color:white; padding:10px; cursor:pointer; font-size:10px;">OPEN GRAPH ENGINE</button>
-            </section>
+            <label>Materiality</label>
+            <select><option>All Materials</option><option>Concrete</option><option>Stone</option></select>
         </div>
 
         <div id="sidebar-analysis" class="sidebar-content" style="display:none;">
             <h3 style="font-size: 11px; color: var(--accent); letter-spacing: 2px;">REPORT GENERATOR</h3>
-            <section style="margin-top:20px;">
-                <label>Select Subject</label>
-                <select id="analysis-selector" onchange="runAnalysis(this.value)">
-                    <option>Choose Precedent...</option>
-                </select>
-            </section>
-            <button onclick="window.print()" style="margin-top:20px; width:100%; background:#444; border:none; color:white; padding:10px; cursor:pointer; font-size:10px;">EXPORT TO PDF</button>
+            <label>Select Subject</label>
+            <select id="analysis-selector" onchange="runAnalysis(this.value)"><option>Choose Precedent...</option></select>
         </div>
 
         <div style="margin-top:auto; border-top:1px solid #444; padding-top:20px;">
             <label>Scraper Agent</label>
             <div style="display:flex; gap:5px; margin-top:10px;">
-                <input type="text" id="agent-input" placeholder="URL..." style="flex:1; height:35px;">
+                <input type="text" id="agent-input" placeholder="URL..." style="flex:1;">
                 <button onclick="runAgent()" style="background:#444; border:none; color:white; padding:0 10px; cursor:pointer;">SCAN</button>
             </div>
             <div id="inbox" style="margin-top:15px; max-height:150px; overflow-y:auto;"></div>
@@ -209,30 +187,25 @@
     <main class="main-content">
         <div id="page-map" class="page">
             <div id="map"></div>
-            <div id="intake-bar" style="height: 100px; background: #fff; padding: 0 30px; display: grid; grid-template-columns: 2fr 1fr 1fr 2fr auto; gap: 15px; align-items: center; border-top: 5px solid var(--accent); box-shadow: 0 -5px 15px rgba(0,0,0,0.05);">
+            <div id="intake-bar" style="height: 100px; background: #fff; padding: 0 30px; display: grid; grid-template-columns: 2fr 1fr 1fr 2fr auto; gap: 15px; align-items: center; border-top: 5px solid var(--accent);">
                 <div><label>Site Name</label><input type="text" id="in-name" style="color:#333; background:#f9f9f9;"></div>
                 <div><label>Lat</label><input type="text" id="in-lat" style="color:#333; background:#f9f9f9;"></div>
                 <div><label>Lng</label><input type="text" id="in-lng" style="color:#333; background:#f9f9f9;"></div>
                 <div><label>Notes</label><input type="text" id="in-notes" style="color:#333; background:#f9f9f9;"></div>
-                <button onclick="commitSite()" class="primary" style="height:40px;">+ COMMIT</button>
+                <button onclick="commitSite()" class="primary">+ COMMIT</button>
             </div>
         </div>
 
         <div id="page-dossier" class="page" style="background:#111; padding:40px;">
             <div id="active-report" style="background:white; color:#333; min-height: 80vh; padding: 50px; border-top: 10px solid var(--accent); max-width:900px; margin:0 auto;">
-                <div style="text-align:center; padding-top:100px; color:#ccc;">
-                    <h2 style="letter-spacing:5px;">DATABASE STANDBY</h2>
-                    <p>Select a precedent from the left to view technical data.</p>
-                </div>
+                <h2 style="text-align:center; color:#ccc; margin-top:100px;">DATABASE STANDBY</h2>
             </div>
         </div>
 
         <div id="page-analysis" class="page" style="background:#eee; overflow-y:auto;">
             <div class="paper">
-                <h1 style="border-bottom: 2px solid var(--accent); padding-bottom: 10px; color: var(--blueprint); margin-top:0;">Technical Site Analysis</h1>
-                <div id="analysis-content" style="margin-top: 40px;">
-                    <p style="color:#999;">Awaiting site selection from control bar...</p>
-                </div>
+                <h1 style="border-bottom: 2px solid var(--accent); color: var(--blueprint);">Technical Site Analysis</h1>
+                <div id="analysis-content" style="margin-top: 40px;"><p style="color:#999;">Awaiting site selection...</p></div>
             </div>
         </div>
     </main>
@@ -242,35 +215,37 @@
 <script>
     let map, churchData = [];
 
-    // 1. NAVIGATION & INITIALIZATION
-    function showPage(id) {
+    // CORE FUNCTION: Enter App
+    function enterApp() {
+        // 1. Completely remove landing page
         document.getElementById('page-landing').style.display = 'none';
         
-        // Hide all pages and sidebars
+        // 2. Show Nav and App Container
+        document.getElementById('main-nav').style.display = 'flex';
+        document.getElementById('app-wrapper').style.display = 'flex';
+        
+        // 3. Initialize Map and Show first page
+        initMap();
+        showPage('map');
+    }
+
+    function showPage(id) {
+        // Hide all pages and sidebar sections
         document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
         document.querySelectorAll('.sidebar-content').forEach(s => s.style.display = 'none');
         
-        // Show target page and its specific sidebar
+        // Show selected
         document.getElementById('page-' + id).style.display = 'block';
         document.getElementById('sidebar-' + id).style.display = 'block';
         
-        // Tab highlight
+        // Update tabs
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active-tab'));
-        if(document.getElementById('btn-' + id)) document.getElementById('btn-' + id).classList.add('active-tab');
+        document.getElementById('btn-' + id).classList.add('active-tab');
 
         if(id === 'map' && map) setTimeout(() => map.invalidateSize(), 200);
         if(id === 'analysis') updateAnalysisList();
     }
 
-    function enterApp() {
-        document.getElementById('page-landing').style.display = 'none';
-        document.getElementById('main-nav').style.display = 'flex';
-        document.getElementById('app-wrapper').style.display = 'flex';
-        showPage('map');
-        initMap();
-    }
-
-    // 2. MAP LOGIC
     function initMap() {
         if (map) return;
         map = L.map('map').setView([53.3498, -6.2603], 7);
@@ -281,12 +256,12 @@
         const name = document.getElementById('in-name').value;
         const lat = parseFloat(document.getElementById('in-lat').value);
         const lng = parseFloat(document.getElementById('in-lng').value);
-        if(!name || isNaN(lat)) return alert("Invalid site data.");
+        if(!name || isNaN(lat)) return alert("Missing data");
 
         const newSite = { id: Date.now(), name, coords: [lat, lng], sign: document.getElementById('in-notes').value };
         churchData.push(newSite);
         renderPins();
-        alert("Committed to Database.");
+        alert("Committed.");
     }
 
     function renderPins() {
@@ -297,18 +272,17 @@
         });
     }
 
-    // 3. AGENT & ANALYSIS LISTS
     function runAgent() {
         const url = document.getElementById('agent-input').value;
         if(!url) return;
         const card = document.createElement('div');
-        card.style = "background:#111; border:1px solid #444; padding:10px; font-size:11px; margin-bottom:10px; border-top:2px solid var(--accent);";
-        card.innerHTML = `DISCOVERY: ${url.split('/').pop()}<br><button onclick="approveSite(); this.parentElement.remove();" style="font-size:9px; background:green; color:white; border:none; cursor:pointer; margin-top:5px;">APPROVE</button>`;
+        card.style = "background:#111; border:1px solid #444; padding:10px; font-size:11px; margin-bottom:10px; border-top:2px solid var(--accent); color:white;";
+        card.innerHTML = `SCANNING: ${url.split('/').pop()}<br><button onclick="approveSite(); this.parentElement.remove();" style="font-size:9px; background:green; color:white; border:none; cursor:pointer; margin-top:5px; padding:3px 8px;">APPROVE</button>`;
         document.getElementById('inbox').prepend(card);
     }
 
     function approveSite() {
-        churchData.push({ id: Date.now(), name: "Scraped Site", coords: [53.3, -6.2], sign: "Agent data source." });
+        churchData.push({ id: Date.now(), name: "Scraped Site", coords: [53.3, -6.2], sign: "Agent data." });
         renderPins();
     }
 
